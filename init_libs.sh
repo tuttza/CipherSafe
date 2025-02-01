@@ -10,3 +10,8 @@ echo "Cloning doctest"
 git clone https://github.com/doctest/doctest.git ./lib
 
 ./sym_link_helper.sh
+
+echo "Compiling imgui lib"
+cmake -S lib/imgui/ -B lib/imgui/.build
+cd lib/imgui/.build
+make
