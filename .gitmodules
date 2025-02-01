@@ -1,0 +1,13 @@
+[submodule "lib/doctest"]
+	path = lib/doctest
+	url = https://github.com/doctest/doctest.git
+[submodule "lib/imgui"]
+	path = lib/imgui
+	url = https://github.com/ocornut/imgui.git
+[submodule "lib/libsodium"]
+	path = lib/libsodium
+	url = https://github.com/jedisct1/libsodium.git
+	tag = 1.0.17-RELEASE
+[submodule "lib/mINI"]
+	path = lib/mINI
+	url = https://github.com/metayeti/mINI.git

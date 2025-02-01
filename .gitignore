@@ -1,0 +1,62 @@
+# Ignore build directories
+/build/
+/build-*/
+
+# Ignore any directory named build, recursively
+**/build/
+
+# Ignore binary files
+**/*.exe
+**/*.dll
+**/*.so
+**/*.dylib
+**/*.out
+**/*.a
+**/*.o
+**/*.obj
+**/*.lib
+
+
+# Ignore CMake generated files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+CTestTestfile.cmake
+CMakeLists.txt.user
+
+# Ignore executable files and libraries
+*.exe
+*.out
+*.app
+*.a
+*.so
+*.dylib
+*.dll
+*.lib
+
+# Ignore temporary files
+*.tmp
+*.temp
+*.log
+
+# Ignore object files
+*.o
+*.obj
+*.lo
+
+# Ignore dependency files
+*.d
+
+# Ignore editor and IDE specific files
+*.swp
+*~
+*.swo
+*.user
+.idea/
+.vscode/
+*.code-workspace
+
+# Ignore additional common files and folders
+.DS_Store
+Thumbs.db
+
