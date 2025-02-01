@@ -47,8 +47,9 @@ bool Settings::Load() {
 bool Settings::Save() {
   bool did_save = false;
 
-  if (!this->file_exists())
+  if (!this->file_exists()) {
     return did_save;
+  }
 
   mINI::INIFile file(this->settings_file_path);
   mINI::INIStructure ini;

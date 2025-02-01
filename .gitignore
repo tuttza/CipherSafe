@@ -1,9 +1,8 @@
-# Ignore build directories
-/build/
-/build-*/
-
 # Ignore any directory named build, recursively
 **/build/
+/build/
+/build-*/
+**/.build/*
 
 # Ignore binary files
 **/*.exe

@@ -6,13 +6,11 @@ CipherSafe is built with 4 key technologies:
 
 0. CPP(11)
 1. SQLITE (for datastore)
-2. Dear IMGUI (for the UI)
-3. libsodium (encryption)
+2. Dear IMGUI (for the UI) - 
+3. libsodium-stable (encryption) - https://download.libsodium.org/libsodium/releases/
+4. mINI (for ini config file parsing/writing)
 
 ## Building CipherSafe
-After cloning, please run:
-
-`$ git submodule update --init --recursive`
 
 ### Build the Libs:
 
@@ -28,7 +26,7 @@ which will symlink the CMakeLists.txt file used to build Dear ImGui library.
 
 #### libsodium
 
-0. `cd CipherSafe/lib/libsodium`
+0. `cd CipherSafe/lib/libsodium-stable`
 1. `./configure`
 2. `make && make check`
 4. `sudo make install`
