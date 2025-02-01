@@ -10,7 +10,6 @@ Settings::Settings(const std::string& work_path) {
   this->Load();
 }
 
-
 bool Settings::Load() {
   std::cout << "Loading the settings.ini file..." << std::endl;
 
@@ -53,9 +52,28 @@ bool Settings::Save() {
 
   mINI::INIFile file(this->settings_file_path);
   mINI::INIStructure ini;
+
+  if (this->console_height <= 0 || this->console_height > 50) {
+    this->console_height = 24;
+  }
   ini["ciphersafe_settings"]["console_height"] = std::to_string(this->console_height);
+
+
+  if (this->password_length <= 0 || this->password_length > 200) {
+    this->password_length = 18;
+  }
   ini["ciphersafe_settings"]["password_length"] = std::to_string(this->password_length);
+
+  if (this->dark_mode.empty()) {
+    this->dark_mode = "dark";
+  }
   ini["ciphersafe_settings"]["dark_mode"] = this->dark_mode;
+
+  std::ifstream font_file(this->font_path);
+  if (!font_file.good()) {
+    this->font_path = "";
+  }
+
   ini["ciphersafe_settings"]["font"] = this->font_path;
   
   if (file.write(ini)) {
