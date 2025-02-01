@@ -14,6 +14,8 @@ CipherSafe is built with 4 key technologies:
 
 ### Build the Libs:
 
+First of Initialize the libraries: `./init_libs.sh` (should only need to be run once)
+
 #### Dear IMGui
 If you have just cloned this repo you will need run the `./sym_link_helper.sh` script
 which will symlink the CMakeLists.txt file used to build Dear ImGui library.
