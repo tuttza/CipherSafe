@@ -1,6 +1,7 @@
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest/doctest.h"
 #include "../database.h"
+#include "../settings.h"
 #include <memory>
 #include <vector>
 

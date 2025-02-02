@@ -26,3 +26,12 @@ If 3rd party libraries need to be built via `cmake` create a `CMakeLists.txt` fi
 2. `cmake -S ./ -B ./build`
 3. `cd ./build`
 4. `make`
+
+#### Running tests
+Doctest is used for unit testing.
+
+`cd src/tests`
+`cmake -S ./ -B ./build`
+`cd ./build`
+`make`
+`./CipherSafeTests`

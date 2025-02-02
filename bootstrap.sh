@@ -43,9 +43,14 @@ function bootstrap_external_libs() {
 	git clone https://github.com/ocornut/imgui.git ${LIBS_DIR}/imgui
 
 	echo "Cloning doctest"
-	git clone https://github.com/doctest/doctest.git ${LIBS_DIR}/docteset
+	git clone https://github.com/doctest/doctest.git ${LIBS_DIR}/doctest
 
 	get_libsodium
+}
+
+function clean_ext_libs() {
+	echo "cleaning up..."
+	rm -rf "${LIBS_DIR}"
 }
 
 #====[ Compile Library Functions ]====
@@ -86,6 +91,7 @@ function build_libsodium() {
 
 #====[ MAIN ]====
 echo "bootstraping CipherSafe dev environment..."
+clean_ext_libs
 bootstrap_external_libs
 build_imgui
 build_libsodium

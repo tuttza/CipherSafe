@@ -8,7 +8,6 @@ set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB CIPHERSAFE_TEST_HEADER_FILES ${SRC_DIR}/*.h)
 file(GLOB CIPHERSAFE_TEST_SOURCE_FILES ${SRC_DIR}/*.cpp)
 file(GLOB CIPHERSAFE_HEADER_FILES ${SRC_DIR}/../*.h)
-
 file(GLOB CIPHERSAFE_SOURCE_FILES ${SRC_DIR}/../*.cpp)
 list(FILTER CIPHERSAFE_SOURCE_FILES EXCLUDE REGEX "main\\.cpp$")
 
@@ -23,18 +22,17 @@ set(SRC_FILES
 
 add_executable(${PROJECT_NAME} ${SRC_FILES})
 
-target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR}/../../lib/doctest)
+target_include_directories(${PROJECT_NAME} PRIVATE ${SRC_DIR}/../../ext_libs/doctest)
 
 # Set compiler options for the target
 target_compile_options(${PROJECT_NAME} PRIVATE
     -Wall    # enable all warnings
     #-g       # include debug info in the executable.
     -Wformat # enables warnings related to the use of format strings.
-
 )
 
 # Include directories for ImGui
-set(IMGUI_LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/imgui)
+set(IMGUI_LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../../ext_libs/imgui)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${IMGUI_LIB_SRC}
     ${IMGUI_LIB_SRC}/backends
@@ -50,13 +48,17 @@ find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(OpenSSL REQUIRED)
 
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(LIBSODIUM REQUIRED libsodium)
+
 # Link against libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../../lib/imgui/build/libimgui.a
+    ${IMGUI_LIB_SRC}/.build/libimgui.a
     ${SDL2_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${SQLite3_LIBRARIES}
     ${OPENSSL_LIBRARIES}
     ${LIBSODIUM_LIBRARIES}
 )
+
 
