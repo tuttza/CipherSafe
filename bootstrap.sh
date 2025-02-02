@@ -1,5 +1,5 @@
 #! /bin/bash
-#set -e
+set -e
 
 LIBS_DIR="./ext_libs"
 mkdir -p ${LIBS_DIR}

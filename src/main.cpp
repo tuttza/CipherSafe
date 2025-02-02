@@ -154,21 +154,23 @@ static std::string randomString(size_t length);
 
 // ====[FUNCTION DEFINITIONS]====
 static bool InitApp() {
+    bool did_init = false;
     std::string homeDir = getUserHomeDir();
 
     if (homeDir.empty()) {
-        return false;
+        return did_init;
     }
 
     if (!homeDir.empty()) {
         std::string appDir = homeDir + "/.CipherSafe";
         createAppDir(appDir);
+        did_init = true;
     }
     else {
-        return false;
+        return did_init;
     }
 
-    return true;
+    return did_init;
 }
 
 static std::string getUserHomeDir() {
