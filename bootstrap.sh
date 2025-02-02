@@ -4,11 +4,15 @@ set -e
 LIBS_DIR="./ext_libs"
 mkdir -p ${LIBS_DIR}
 
-# Any new libraries need that are not made by us
+# Any new libraries needed that are not made by us
 # should be added here. We don't use git submodules :(.
-# this function is responbisble for downloading and extracting the 
-# needed library source. other functions should be made to fetch the source.
-# those functions should follow this naming convention: get_<LIB_NAME>(); 
+# These functions are responbisble for downloading and extracting the 
+# needed library source. Other functions should be made to fetch the source.
+#
+# Those functions should follow this naming convention:
+# FETCH: get_<LIB_NAME>();
+# BUILD: build_<LIB_NAME>();
+# SYMLINK: symlink_<LIB_NAME>_<LINK_TARGET_NAME>();
 
 function get_libsodium() {	
 	local BASE_URL="https://download.libsodium.org/libsodium/releases/"
