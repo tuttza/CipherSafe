@@ -24,7 +24,7 @@ target_compile_options(${PROJECT_NAME} PRIVATE
 )
 
 # Include directories for ImGui
-set(IMGUI_LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../lib/imgui)
+set(IMGUI_LIB_SRC ${CMAKE_CURRENT_SOURCE_DIR}/../ext_libs/imgui)
 target_include_directories(${PROJECT_NAME} PRIVATE
     ${IMGUI_LIB_SRC}
     ${IMGUI_LIB_SRC}/backends
@@ -45,7 +45,7 @@ pkg_check_modules(LIBSODIUM REQUIRED libsodium)
 
 # Link against libraries
 target_link_libraries(${PROJECT_NAME} PRIVATE
-    ${CMAKE_CURRENT_SOURCE_DIR}/../lib/imgui/build/libimgui.a
+    ${CMAKE_CURRENT_SOURCE_DIR}/../ext_libs/imgui/.build/libimgui.a
     ${SDL2_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${SQLite3_LIBRARIES}

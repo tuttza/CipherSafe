@@ -4,6 +4,8 @@
 /build-*/
 **/.build/*
 
+ext_libs
+
 # Ignore binary files
 **/*.exe
 **/*.dll

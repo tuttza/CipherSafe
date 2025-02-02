@@ -620,8 +620,8 @@ static void DisplaySettings(std::unique_ptr<AppState>& app_state) {
     ImGui::Text("Dark Mode:");
     if (ImGui::Combo("##Dark Mode", &selected_dark_mode, items, IM_ARRAYSIZE(items)))
     {
-
         std::cout << "Selected item: " << selected_dark_mode << " - " << items[selected_dark_mode] << std::endl;
+        
         if (items[selected_dark_mode] == items[0]) {
             app_state->settings->dark_mode = "light"; 
             selected_dark_mode = 0;

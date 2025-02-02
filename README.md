@@ -13,25 +13,13 @@ CipherSafe is built with 4 key technologies:
 ## Building CipherSafe
 
 ### Build the Libs:
+In order to build CipherSafe it depends on few 3rd partly libraries mentioned above.
 
-First of Initialize the libraries: `./init_libs.sh` (should only need to be run once)
+There is a script in root of CipherSafe's source called: `bootstrap.sh` and it is responsible for downloading/extracting/compiling our 3rd party libaries into a directory called `./ext_libs` (which will not exist until your run `bootstrap.sh`)
 
-#### Dear IMGui
-If you have just cloned this repo you will need run the `./sym_link_helper.sh` script
-which will symlink the CMakeLists.txt file used to build Dear ImGui library.
+#### Note*
+If 3rd party libraries need to be built via `cmake` create a `CMakeLists.txt` file in `./external_cmake` and a symlink via a symlinker function in `bootstrap.sh`
 
-0. `./sym_link_helper.sh`
-1. `cd CipherSafe/lib/imgui`
-2. `cmake -S ./ -B ./build`
-3. `cd ./build`
-4. `make`
-
-#### libsodium
-
-0. `cd CipherSafe/lib/libsodium-stable`
-1. `./configure`
-2. `make && make check`
-4. `sudo make install`
 
 #### Build the App
 1. `cd CipherSafe/src`

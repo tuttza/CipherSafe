@@ -57,5 +57,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${OPENGL_LIBRARIES}
     ${SQLite3_LIBRARIES}
     ${OPENSSL_LIBRARIES}
+    ${LIBSODIUM_LIBRARIES}
 )
 

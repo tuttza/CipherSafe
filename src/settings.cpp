@@ -1,6 +1,4 @@
 #include "settings.h"
-#include <iostream>
-#include <fstream>
 
 using namespace CipherSafe;
 

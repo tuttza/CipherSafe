@@ -17,7 +17,7 @@ namespace CipherSafe {
 	class Crypt  {
 	public:
 		Crypt();
-	    //~Crypt();
+	  ~Crypt() {};
 		void encrypt_file();
 		void decrypt_file();
 		void init(const std::string& path);

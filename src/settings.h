@@ -3,7 +3,7 @@
 
 #include <iostream>
 #include <fstream>
-#include "../lib/mINI/src/mini/ini.h"
+#include "../ext_libs/mINI/src/mini/ini.h"
 #include <string>
 
 namespace CipherSafe {
