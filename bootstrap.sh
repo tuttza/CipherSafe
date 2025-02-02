@@ -15,8 +15,8 @@ function get_libsodium() {
 	local LATEST_RELEASE=$(curl -s $BASE_URL | grep -oE 'libsodium-[0-9.]+-stable.tar.gz' | sort -V | tail -n 1)
 
 	if [ -z "$LATEST_RELEASE" ]; then
-	  echo "Failed to determine the latest stable release of libsodium."
-	  exit 1
+		echo "Failed to determine the latest stable release of libsodium."
+		exit 1
 	fi
 
 	local DOWNLOAD_URL="$BASE_URL$LATEST_RELEASE"
