@@ -166,9 +166,6 @@ static bool InitApp() {
         createAppDir(appDir);
         did_init = true;
     }
-    else {
-        return did_init;
-    }
 
     return did_init;
 }
@@ -192,6 +189,13 @@ static std::string getUserHomeDir() {
 }
 
 static bool createAppDir(const std::string& dirPath) {
+    char* app_work_dir_from_env = std::getenv("CIPHERSAFE_WORKDIR");
+
+    if (app_work_dir_from_env) {
+        std::cout << "skipping creating home dir as alternate workdir specfied by ENV var." << std::endl;
+        return true;
+    }
+
     if (mkdir(dirPath.c_str(), 0755) != 0) {
         if (errno != EEXIST) {
             std::cerr << "Failed to create directory: " << strerror(errno) << std::endl;
@@ -901,13 +905,22 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    const std::string app_work_dir = getUserHomeDir() + "/.CipherSafe/";
+    char* app_work_dir_from_env = std::getenv("CIPHERSAFE_WORKDIR");
+    std::string app_work_dir_value;
 
-    std::unique_ptr<CipherSafe::Settings> app_settings( new CipherSafe::Settings(app_work_dir) );
+    if (app_work_dir_from_env) {
+        std::cout << "using app_work_dir from env" << std::endl;
+        app_work_dir_value = app_work_dir_from_env;
+    } else {
+        std::cout << "using hardcoded app_work_dir" << std::endl;
+        app_work_dir_value = getUserHomeDir() + "/.CipherSafe/";
+    }
+
+    std::unique_ptr<CipherSafe::Settings> app_settings( new CipherSafe::Settings(app_work_dir_value) );
 
     std::unique_ptr<AppState> state(new AppState);
     //state->init("./"); // used for testing within the build dir. use when modifying crypt.cpp.
-    state->crypt.init(app_work_dir);
+    state->crypt.init(app_work_dir_value);
     state->crypt.decrypt_file();
     state->show_main_window = true;
     state->show_console     = true;
@@ -916,7 +929,7 @@ int main(int argc, char* argv[]) {
     state->settings         = std::move(app_settings);
 
     // TODO: Support custom paths to different locations for core.db
-    const std::string dbPath = app_work_dir + "core.db";
+    const std::string dbPath = app_work_dir_value + "core.db";
     std::unique_ptr<CipherSafe::Database> db(new CipherSafe::Database(dbPath));
     state->db = std::move(db);
 

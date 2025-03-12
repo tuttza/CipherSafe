@@ -15,7 +15,7 @@ CipherSafe is built with 4 key technologies:
 ### Build the Libs:
 In order to build CipherSafe it depends on few 3rd partly libraries mentioned above.
 
-There is a script in root of CipherSafe's source called: `bootstrap.sh` and it is responsible for downloading/extracting/compiling our 3rd party libaries into a directory called `./ext_libs` (which will not exist until your run `bootstrap.sh`)
+There is a script in root of CipherSafe's source called: `bootstrap.sh` and it is responsible for downloading/extracting/compiling our 3rd party libaries into a directory called `./ext_libs` (which will not exist until you run `bootstrap.sh`)
 
 #### Note*
 If 3rd party libraries need to be built via `cmake` create a `CMakeLists.txt` file in `./external_cmake` and a symlink via a symlinker function in `bootstrap.sh`

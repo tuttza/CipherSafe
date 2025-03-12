@@ -151,7 +151,6 @@ std::vector<std::unique_ptr<Database::Entry>> Database::Filter(const std::string
         throw std::runtime_error("Failed to prepare statement: " + std::string(sqlite3_errmsg(this->db)));
     }
 
-    // Bind the query parameter
     rc = sqlite3_bind_text(stmt, 1, wildcard_query.c_str(), -1, SQLITE_TRANSIENT);
     if (rc != SQLITE_OK) {
         sqlite3_finalize(stmt);
@@ -229,7 +228,7 @@ std::unique_ptr<Database::Entry> Database::GetEntryById(int id) {
             std::string(reinterpret_cast<const char*>(password)),
             std::string(reinterpret_cast<const char*>(category)),
             std::string(reinterpret_cast<const char*>(notes))
-            });
+        });
 
         sqlite3_finalize(stmt);
         return entry;
