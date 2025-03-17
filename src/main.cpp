@@ -13,6 +13,7 @@
 #include <functional> //for std::function
 #include <algorithm>  //for std::generate_n, std::sort
 #include <chrono>
+#include <cstdlib>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
 #include "crypt.h"
@@ -152,8 +153,30 @@ static bool createAppDir(const std::string& dirPath);
 static std::string getUserHomeDir();
 static bool InitApp();
 static std::string randomString(size_t length);
+static void openURL(const std::string& url);
 
 // ====[FUNCTION DEFINITIONS]====
+static bool startsWith(const std::string& str, const std::string& prefix) {
+    return str.substr(0, prefix.size()) == prefix;
+}
+
+static bool isValidURL(const std::string& url) {
+    return startsWith(url, "http://") || startsWith(url, "https://");
+}
+
+static void openURL(const std::string& url) {
+#ifdef _WIN32
+    std::string command = "start " + url;
+#elif __APPLE__
+    std::string command = "open " + url;
+#elif __linux__
+    std::string command = "xdg-open " + url;
+#else
+    #error "Unsupported OS"
+#endif
+    std::system(command.c_str());
+}
+
 static bool InitApp() {
     bool did_init = false;
     std::string homeDir = getUserHomeDir();
@@ -866,6 +889,12 @@ static void DisplaySecret(std::unique_ptr<AppState>& app_state) {
     ImGui::Text("URL/App/Service");
     ImGui::InputText("##url", &app_state->updated_url, (app_state->input_flags | ImGuiInputTextFlags_CallbackEdit), URLInputTextUpdateCallback, app_state.get());
     ImGui::PopItemWidth();
+
+    if (isValidURL(app_state->updated_url)) {
+        if (ImGui::Button("Open")) {
+            openURL(app_state->updated_url);
+        }
+    }
 
     ImGui::Spacing();
     ImGui::PushItemWidth(-1);
