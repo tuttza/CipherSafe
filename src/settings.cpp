@@ -13,7 +13,7 @@ bool Settings::Load() {
 
   bool did_load = false;
 
-  if (!this->file_exists()) {
+  if (!this->ini_file_exists()) {
     std::cout << "settings.ini file did not exist, now creating a new settings.ini file: " << this->settings_file_path << std::endl;
 
     mINI::INIFile file(this->settings_file_path);
@@ -22,7 +22,14 @@ bool Settings::Load() {
     ini["ciphersafe_settings"]["console_height"] = std::to_string(this->console_height);
     ini["ciphersafe_settings"]["password_length"] = std::to_string(this->password_length);
     ini["ciphersafe_settings"]["dark_mode"] = this->dark_mode;
+    ini["ciphersafe_settings"]["font_size"] = std::to_string(this->font_size);
     ini["ciphersafe_settings"]["font"] = this->font_path;
+    ini["ciphersafe_settings"]["japanese_font"] = this->japanese_font_path;
+    ini["ciphersafe_settings"]["greek_font"] = this->greek_font_path;
+    ini["ciphersafe_settings"]["korean_font"] = this->korean_font_path;
+    ini["ciphersafe_settings"]["chinese_font"] = this->chinese_font_path;
+    ini["ciphersafe_settings"]["thai_font"] = this->thai_font_path;
+    ini["ciphersafe_settings"]["viet_font"] = this->viet_font_path;
 
     file.generate(ini);
   }
@@ -34,7 +41,13 @@ bool Settings::Load() {
     this->console_height = std::stoi(ini["ciphersafe_settings"]["console_height"]);
     this->password_length = std::stoi(ini["ciphersafe_settings"]["password_length"]);
     this->dark_mode = ini["ciphersafe_settings"]["dark_mode"];
+    this->font_size = std::stod(ini["ciphersafe_settings"]["font_size"]);
     this->font_path = ini["ciphersafe_settings"]["font"];
+    this->japanese_font_path = ini["ciphersafe_settings"]["japanese_font"];
+    this->greek_font_path = ini["ciphersafe_settings"]["greek_font"];
+    this->korean_font_path = ini["ciphersafe_settings"]["korean_font"];
+    this->chinese_font_path = ini["ciphersafe_settings"]["chinese_font"];
+    this->viet_font_path = ini["ciphersafe_settings"]["viet_font"];
     did_load = true;
   }
 
@@ -44,7 +57,8 @@ bool Settings::Load() {
 bool Settings::Save() {
   bool did_save = false;
 
-  if (!this->file_exists()) {
+  if (!this->ini_file_exists()) {
+    std::cerr << "attemptedt to save to INI file, but failed to find it." << std::endl;
     return did_save;
   }
 
@@ -67,13 +81,19 @@ bool Settings::Save() {
   }
   ini["ciphersafe_settings"]["dark_mode"] = this->dark_mode;
 
-  std::ifstream font_file(this->font_path);
-  if (!font_file.good()) {
-    this->font_path = "";
-  }
-
-  ini["ciphersafe_settings"]["font"] = this->font_path;
+  // FONTS
+  if (this->font_size > 28)
+    this->font_size = 28;
   
+  ini["ciphersafe_settings"]["font_size"] = std::to_string(this->font_size);
+  ini["ciphersafe_settings"]["font"] = this->font_path;
+  ini["ciphersafe_settings"]["japanese_font"] = this->japanese_font_path;
+  ini["ciphersafe_settings"]["greek_font"] = this->greek_font_path;
+  ini["ciphersafe_settings"]["korean_font"] = this->korean_font_path;
+  ini["ciphersafe_settings"]["chinese_font"] = this->chinese_font_path;
+  ini["ciphersafe_settings"]["thai_font"] = this->thai_font_path;
+  ini["ciphersafe_settings"]["viet_font"] = this->viet_font_path;
+
   if (file.write(ini)) {
     did_save = true;
   }
@@ -81,7 +101,7 @@ bool Settings::Save() {
   return did_save;
 }
 
-bool Settings::file_exists() {
+bool Settings::ini_file_exists() {
   if (this->settings_file_path.empty()) {
     std::cerr << "Could not find settings.ini file: path is empty" << std::endl;
     return false;

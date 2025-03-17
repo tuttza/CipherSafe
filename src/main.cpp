@@ -5,15 +5,16 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_opengl.h>
 #include <iostream>
+#include <thread>
 #include <memory>
 #include <string>
 #include <vector>
 #include <random>
 #include <functional> //for std::function
-#include <algorithm>  //for std::generate_n
+#include <algorithm>  //for std::generate_n, std::sort
+#include <chrono>
 #include <openssl/rand.h>
 #include <openssl/evp.h>
-#include <string>
 #include "crypt.h"
 #include "settings.h"
 #include "database.h"
@@ -113,7 +114,7 @@ struct AppState {
     std::unique_ptr<CipherSafe::Database> db;
 
     std::string consoleText = "Idle...";
-    std::string filterQuery = "";
+    std::string filterQuery = u8"";
     int selectedEntryId;
     ImGuiInputTextFlags input_flags = ImGuiInputTextFlags_ReadOnly;
     std::string edit_label = "Edit";
@@ -206,6 +207,77 @@ static bool createAppDir(const std::string& dirPath) {
     return true;
 }
 
+static bool stringContainsSubstringIgnoreCase(const std::string& str, const std::string& substr) {
+    std::string strLower = str;
+    std::string substrLower = substr;
+
+    std::transform(strLower.begin(), strLower.end(), strLower.begin(), [](unsigned char c){ return std::tolower(c); });
+    std::transform(substrLower.begin(), substrLower.end(), substrLower.begin(), [](unsigned char c){ return std::tolower(c); });
+
+    return strLower.find(substrLower) != std::string::npos;
+}
+
+static bool canLoadFont(const std::string& fontPath) {
+    if (fontPath.empty()) {
+        return false;
+    }
+    
+    std::ifstream font_file(fontPath);
+
+    if (font_file.good() && !fontPath.empty()) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+static void loadFontsTask(ImGuiIO* io, std::unique_ptr<AppState>& app_state) {
+    (void)*io;
+
+    // Handle font loading:
+    if (canLoadFont(app_state->settings->font_path)) {
+        std::cout << "loading main app font..." << std::endl;
+        io->Fonts->AddFontFromFileTTF(app_state->settings->font_path.c_str(), app_state->settings->font_size, nullptr, io->Fonts->GetGlyphRangesDefault());
+    } else {
+        std::cout << "no main font found default font..." << std::endl;
+        io->Fonts->AddFontDefault();
+    }
+
+    ImFontConfig fontConfig;
+    fontConfig.MergeMode = true;
+
+    // load non-latin fonts here:
+    if (canLoadFont(app_state->settings->japanese_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->japanese_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesJapanese());
+    }
+
+    if (canLoadFont(app_state->settings->korean_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->korean_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesKorean());
+    }
+
+    if (canLoadFont(app_state->settings->chinese_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->chinese_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesChineseFull());
+    }
+
+    if (canLoadFont(app_state->settings->thai_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->thai_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesThai());
+    }
+
+    if (canLoadFont(app_state->settings->viet_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->viet_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesVietnamese());
+    }
+
+    if (canLoadFont(app_state->settings->cyrillic_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->cyrillic_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesCyrillic());
+    }
+
+    if (canLoadFont(app_state->settings->greek_font_path)) {
+        io->Fonts->AddFontFromFileTTF(app_state->settings->greek_font_path.c_str(), app_state->settings->font_size, &fontConfig, io->Fonts->GetGlyphRangesGreek());
+    }
+
+    io->Fonts->Build();
+}
+
 static void InitSDL(std::unique_ptr<AppState>& app_state) {
     // Setup SDL
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_GAMECONTROLLER) != 0) {
@@ -240,10 +312,9 @@ static void InitSDL(std::unique_ptr<AppState>& app_state) {
     
     ImGuiIO& io = ImGui::GetIO(); (void)io;
 
-    if (!app_state->settings->font_path.empty()) {
-        ImFontAtlas* fontAtlas = ImGui::GetIO().Fonts;
-        fontAtlas->AddFontFromFileTTF(app_state->settings->font_path.c_str(), 16.0f);
-    }
+    auto start = std::chrono::high_resolution_clock::now();
+    std::thread load_fonts(loadFontsTask, &io, std::ref(app_state));
+    //loadFontsTask(&io, std::ref(app_state));
 
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;     // Enable Keyboard Controls
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
@@ -283,7 +354,6 @@ static void DisplayTable(std::unique_ptr<AppState>& app_state) {
 
     int entriesSize = dbEntries.size();
     bool selected = false;
-    bool entries_need_sort = false;
 
     ImGui::Spacing();
     ImGui::PushItemWidth(-1);
@@ -663,6 +733,21 @@ static void DisplaySettings(std::unique_ptr<AppState>& app_state) {
 
     ImGui::Spacing();
     ImGui::Spacing();
+    ImGui::SeparatorText("Font Settings");
+
+    ImGui::Text("All font releated settings require and app restart to take effect.");
+    ImGui::Spacing();
+    ImGui::Spacing();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Font Size:");
+    ImGui::InputDouble("##font_size", &app_state->settings->font_size);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
     ImGui::PushItemWidth(-1);
     ImGui::Text("App Font:");
     ImGui::InputText("##app_font", &app_state->settings->font_path);
@@ -670,9 +755,64 @@ static void DisplaySettings(std::unique_ptr<AppState>& app_state) {
 
     ImGui::Spacing();
     ImGui::Spacing();
-    if (ImGui::Button("Close")) {
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Japanese Font:");
+    ImGui::InputText("##japanese_font", &app_state->settings->japanese_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Korean Font:");
+    ImGui::InputText("##korean_font", &app_state->settings->korean_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Chinese Font:");
+    ImGui::InputText("##chinese_font", &app_state->settings->chinese_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Thai Font:");
+    ImGui::InputText("##thai_font", &app_state->settings->thai_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Vietnamese Font:");
+    ImGui::InputText("##viet_font", &app_state->settings->viet_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Cyrillic Font:");
+    ImGui::InputText("##cyrillic_font", &app_state->settings->cyrillic_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::PushItemWidth(-1);
+    ImGui::Text("Greek Font:");
+    ImGui::InputText("##greek_font", &app_state->settings->greek_font_path);
+    ImGui::PopItemWidth();
+
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::Spacing();
+    ImGui::SameLine();
+    if (ImGui::Button("Close and Save")) {
         app_state->show_settings = false;        
-        app_state->settings->Save();
+        if (app_state->settings->Save()) {
+            app_state->consoleText = "succesfully updated settings...";
+        } else {
+            app_state->consoleText = "something went wrong updating settings, updates not saved...";
+        }
     }
 
     ImGui::End();
@@ -928,7 +1068,6 @@ int main(int argc, char* argv[]) {
     state->show_secret      = false;
     state->settings         = std::move(app_settings);
 
-    // TODO: Support custom paths to different locations for core.db
     const std::string dbPath = app_work_dir_value + "core.db";
     std::unique_ptr<CipherSafe::Database> db(new CipherSafe::Database(dbPath));
     state->db = std::move(db);
