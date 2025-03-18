@@ -758,7 +758,7 @@ static void DisplaySettings(std::unique_ptr<AppState>& app_state) {
     ImGui::Spacing();
     ImGui::SeparatorText("Font Settings");
 
-    ImGui::Text("All font releated settings require and app restart to take effect.");
+    ImGui::Text("* All font releated settings require an app restart to take effect.");
     ImGui::Spacing();
     ImGui::Spacing();
 
@@ -766,7 +766,7 @@ static void DisplaySettings(std::unique_ptr<AppState>& app_state) {
     ImGui::Spacing();
     ImGui::PushItemWidth(-1);
     ImGui::Text("Font Size:");
-    ImGui::InputDouble("##font_size", &app_state->settings->font_size);
+    ImGui::InputDouble("##font_size", &app_state->settings->font_size, 0.0, 0.0, "%0.1f");
     ImGui::PopItemWidth();
 
     ImGui::Spacing();
