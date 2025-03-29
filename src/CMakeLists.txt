@@ -4,9 +4,6 @@ project(CipherSafe)
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-list(APPEND CMAKE_LIBRARY_PATH /usr/lib/x86_64-linux-gnu)
-list(APPEND CMAKE_INCLUDE_PATH /usr/include)
-
 # Set source files and executable
 set(SRC_DIR ${CMAKE_CURRENT_SOURCE_DIR})
 file(GLOB CIPHERSAFE_HEADER_FILES ${SRC_DIR}/*.h)
@@ -38,7 +35,6 @@ target_include_directories(${PROJECT_NAME} PRIVATE
 find_package(SQLite3 REQUIRED)
 find_package(SDL2 REQUIRED)
 find_package(OpenGL REQUIRED)
-find_package(OpenSSL REQUIRED)
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(LIBSODIUM REQUIRED libsodium)
@@ -49,7 +45,6 @@ target_link_libraries(${PROJECT_NAME} PRIVATE
     ${SDL2_LIBRARIES}
     ${OPENGL_LIBRARIES}
     ${SQLite3_LIBRARIES}
-    ${OPENSSL_LIBRARIES}
     ${LIBSODIUM_LIBRARIES}
 )
 

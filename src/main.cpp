@@ -14,8 +14,6 @@
 #include <algorithm>  //for std::generate_n, std::sort
 #include <chrono>
 #include <cstdlib>
-#include <openssl/rand.h>
-#include <openssl/evp.h>
 #include "crypt.h"
 #include "settings.h"
 #include "database.h"
@@ -62,7 +60,7 @@ struct AppState {
         updated_password.clear();
         updated_category.clear();
         updated_notes.clear();
-    }
+   }
 
     /*
      * FormState will be used for storing text need for
@@ -344,11 +342,13 @@ static void InitSDL(std::unique_ptr<AppState>& app_state) {
     app_state->windowContext.imgui_io = &io;
 
     // Setup Dear ImGui style
-    if (app_state->settings->dark_mode == "dark")
+    if (app_state->settings->dark_mode == "dark") {
         ImGui::StyleColorsDark();
+    }
 
-    if (app_state->settings->dark_mode == "light")
+    if (app_state->settings->dark_mode == "light") {
         ImGui::StyleColorsLight();
+    }
 
     // Rounded window corners
     ImGui::GetStyle().WindowRounding = 0.0f;
@@ -828,7 +828,7 @@ static void DisplaySettings(std::unique_ptr<AppState>& app_state) {
     ImGui::Spacing();
     ImGui::Spacing();
     ImGui::Spacing();
-    ImGui::SameLine();
+
     if (ImGui::Button("Close and Save")) {
         app_state->show_settings = false;        
         if (app_state->settings->Save()) {
@@ -956,11 +956,16 @@ static void DisplaySecret(std::unique_ptr<AppState>& app_state) {
                 app_state->consoleText = "successfully removed secret";
                 app_state->show_secret = false;
                 app_state->show_main_window = true;
-
                 app_state->delete_label = "Delete";
                 app_state->delete_click_step = 0;
-            }
-        }
+            } else {
+	      app_state->consoleText = "failed to remove secret";
+	      app_state->show_secret = false;
+              app_state->show_main_window = true;
+	      app_state->delete_label = "Delete";
+              app_state->delete_click_step = 0;
+	    }
+	}
     }
 
     ImGui::PopStyleColor(3);
@@ -1049,9 +1054,7 @@ static void MainWindowTearDown(std::unique_ptr<AppState>& app_state) {
     SDL_Quit();
 }
 
-
 static std::string randomString(size_t length) {
-    RAND_poll();
     const char charset[] = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()-_=+";
     const size_t max_index = sizeof(charset) - 1;
 
@@ -1059,8 +1062,8 @@ static std::string randomString(size_t length) {
     password.reserve(length);
 
     // Buffer to hold random bytes
-    unsigned char buffer[length];
-    RAND_bytes(buffer, sizeof(buffer));
+    std::vector<unsigned char> buffer(length);
+    randombytes_buf(buffer.data(), buffer.size());
 
     for (size_t i = 0; i < length; ++i) {
         password += charset[buffer[i] % max_index];
